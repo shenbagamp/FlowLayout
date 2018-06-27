@@ -3,6 +3,8 @@
     <declare-styleable name="FlowLayout">
         <attr name="FlowLayout_horizontalPadding" format="dimension" />
         <attr name="FlowLayout_verticalPadding" format="dimension" />
+        <attr name="FlowLayout_horizontal_spacing" format="dimension" />
+        <attr name="FlowLayout_vertical_spacing" format="dimension" />
     </declare-styleable>
 
 </resources>

@@ -14,7 +14,10 @@ public class FlowLayout extends ViewGroup {
 
     private int mHorizontalPadding;
     private int mVerticalPadding;
-
+    int mHorizontalSpacing;
+    int mVerticalSpacing;
+    private int  DEFAULT_HORIZONTAL_SPACING=15;
+    private  int DEFAULT_VERTICAL_SPACING=15;
     public FlowLayout(Context context) {
         super(context);
     }
@@ -34,6 +37,10 @@ public class FlowLayout extends ViewGroup {
         try {
             mHorizontalPadding = a.getDimensionPixelSize(R.styleable.FlowLayout_FlowLayout_horizontalPadding, 0);
             mVerticalPadding = a.getDimensionPixelSize(R.styleable.FlowLayout_FlowLayout_verticalPadding, 0);
+            mHorizontalSpacing = a.getDimensionPixelSize(
+                    R.styleable.FlowLayout_FlowLayout_horizontal_spacing, DEFAULT_HORIZONTAL_SPACING);
+            mVerticalSpacing = a.getDimensionPixelSize(
+                    R.styleable.FlowLayout_FlowLayout_vertical_spacing, DEFAULT_VERTICAL_SPACING);
         } finally {
             a.recycle();
         }
@@ -74,7 +81,7 @@ public class FlowLayout extends ViewGroup {
                 childLeft = getPaddingLeft();
                 Log.i("Left", String.valueOf(childLeft));
 
-                childTop += mVerticalPadding + lineHeight;
+                childTop += mVerticalSpacing + lineHeight;
                 list2.add(childTop);
 
                 lineHeight = childHeight;
@@ -82,7 +89,7 @@ public class FlowLayout extends ViewGroup {
 
                 count1++;
             }
-            childLeft += childWidth + mHorizontalPadding;
+            childLeft += childWidth + mHorizontalSpacing;
         }
         wantedHeight += childTop + lineHeight + getPaddingBottom();
         setMeasuredDimension(myWidth, resolveSize(wantedHeight, heightMeasureSpec));
@@ -108,11 +115,11 @@ public class FlowLayout extends ViewGroup {
             lineHeight = Math.max(childHeight, lineHeight);
             if (childWidth + childLeft + getPaddingRight() > myWidth) {
                 childLeft = getPaddingLeft();
-                childTop += mVerticalPadding + lineHeight;
+                childTop += mVerticalSpacing + lineHeight;
                 lineHeight = childHeight;
             }
             child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
-            childLeft += childWidth + mHorizontalPadding;
+            childLeft += childWidth + mHorizontalSpacing;
         }
     }
 }
