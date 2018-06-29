@@ -5,19 +5,23 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-
 import java.util.ArrayList;
 import java.util.List;
-
-
 public class FlowLayout extends ViewGroup {
-
+    View child;
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
+    private int orientation = FlowLayout.HORIZONTAL;
+    public static final int LAYOUT_DIRECTION_LTR = 0;
+    public static final int LAYOUT_DIRECTION_RTL = 1;
     private int mHorizontalPadding;
     private int mVerticalPadding;
     int mHorizontalSpacing;
     int mVerticalSpacing;
-    private int  DEFAULT_HORIZONTAL_SPACING=15;
-    private  int DEFAULT_VERTICAL_SPACING=15;
+    private int DEFAULT_HORIZONTAL_SPACING = 15;
+    private int DEFAULT_VERTICAL_SPACING = 15;
+
+
     public FlowLayout(Context context) {
         super(context);
     }
@@ -41,85 +45,148 @@ public class FlowLayout extends ViewGroup {
                     R.styleable.FlowLayout_FlowLayout_horizontal_spacing, DEFAULT_HORIZONTAL_SPACING);
             mVerticalSpacing = a.getDimensionPixelSize(
                     R.styleable.FlowLayout_FlowLayout_vertical_spacing, DEFAULT_VERTICAL_SPACING);
+
+            this.setOrientation(a.getInteger(R.styleable.FlowLayout_android_orientation, FlowLayout.HORIZONTAL));
+
         } finally {
             a.recycle();
         }
-        Log.i( "mHorizontalPadding" , String.valueOf(mHorizontalPadding));
-        Log.i( "mVerticalPadding" , String.valueOf(mVerticalPadding));
     }
+
+    public void setOrientation(int orientation) {
+        if (orientation == FlowLayout.VERTICAL) {
+            this.orientation = orientation;
+        } else {
+            this.orientation = FlowLayout.HORIZONTAL;
+        }
+    }
+
+    public int getOrientation() {
+        return orientation;
+    }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int val = this.getOrientation();
+        int val_h = FlowLayout.HORIZONTAL;
+        final int sizeHeight = MeasureSpec.getSize(heightMeasureSpec) - this.getPaddingTop() - this.getPaddingBottom();
+        Log.i("size", String.valueOf(sizeHeight));
+        //For Horizontal
         int childLeft = getPaddingLeft();
+
         int childTop = getPaddingTop();
-        List<Integer> list1=new ArrayList<>();
-        List<Integer> list2=new ArrayList<>();
         int lineHeight = 0;
-        int count1=0;
-        // 100 is a dummy number, widthMeasureSpec should always be EXACTLY for FlowLayout
         int myWidth = resolveSize(100, widthMeasureSpec);
         int wantedHeight = 0;
-        //Log.i("count", String.valueOf(getChildCount()));
-        for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() == View.GONE) {
-                continue;
 
+        //For Vertical
+        int childRight = getPaddingRight();
+        int childBottom = getPaddingBottom();
+        int lineWidth = 0;
+        int myHeight = resolveSize(100, heightMeasureSpec);
+        int wantedWidth = 0;
+
+
+        if (val == val_h) {
+            for (int i = 0; i < getChildCount(); i++) {
+                final View child = getChildAt(i);
+                if (child.getVisibility() == View.GONE) {
+                    continue;
+                }
+                child.measure(
+                        getChildMeasureSpec(widthMeasureSpec, 0, child.getLayoutParams().width),
+                        getChildMeasureSpec(heightMeasureSpec, 0, child.getLayoutParams().height));
+                int childWidth = child.getMeasuredWidth();
+                int childHeight = child.getMeasuredHeight();
+                Log.i("chileLeft", String.valueOf(childWidth));
+                lineHeight = Math.max(childHeight, lineHeight);
+                if (childWidth + childLeft + getPaddingRight() > myWidth) {
+                    // wrap this line
+                    childLeft = getPaddingLeft();
+                    childTop += mVerticalSpacing + lineHeight;
+                    lineHeight = childHeight;
+                }
+                childLeft += childWidth + mHorizontalSpacing;
             }
-            // let the child measure itself
-            child.measure(
-                    getChildMeasureSpec(widthMeasureSpec, 0, child.getLayoutParams().width),
-                    getChildMeasureSpec(heightMeasureSpec, 0, child.getLayoutParams().height));
-            int childWidth = child.getMeasuredWidth();
-            int childHeight = child.getMeasuredHeight();
-            System.out.println("childHeight1:"+childHeight);
-            // lineheight is the height of current line, should be the height of the heightest view
-            lineHeight = Math.max(childHeight, lineHeight);
-            Log.i(String.valueOf(i), String.valueOf(lineHeight));
-            if (childWidth + childLeft + getPaddingRight() > myWidth) {
-                // wrap this line
-                childLeft = getPaddingLeft();
-                Log.i("Left", String.valueOf(childLeft));
+            wantedHeight += childTop + lineHeight + getPaddingBottom();
+            setMeasuredDimension(myWidth, resolveSize(wantedHeight, heightMeasureSpec));
+            int a=resolveSize(wantedHeight, heightMeasureSpec);
+            System.out.println(a);
+            //Log.i("hi", String.valueOf(a));
+        } else {
 
-                childTop += mVerticalSpacing + lineHeight;
-                list2.add(childTop);
+            for (int i = 0; i < getChildCount(); i++) {
+                final View child = getChildAt(i);
+                if (child.getVisibility() == View.GONE) {
+                    continue;
+                }
+                child.measure(
+                        getChildMeasureSpec(widthMeasureSpec, 0, child.getLayoutParams().width),
+                        getChildMeasureSpec(heightMeasureSpec, 0, child.getLayoutParams().height));
+                int childWidth = child.getMeasuredWidth();
+                int childHeight = child.getMeasuredHeight();
+                lineWidth = Math.max(childWidth, lineWidth);
+                int temp=childHeight;
+                Log.i("nhtgj", String.valueOf(childHeight + childTop + getPaddingBottom()));
 
-                lineHeight = childHeight;
-                System.out.println("childHeight2:"+lineHeight);
 
-                count1++;
+                
+                childTop += childHeight + mVerticalSpacing;
             }
-            childLeft += childWidth + mHorizontalSpacing;
-        }
-        wantedHeight += childTop + lineHeight + getPaddingBottom();
-        setMeasuredDimension(myWidth, resolveSize(wantedHeight, heightMeasureSpec));
-        Log.i("Left", String.valueOf(list1));
-        Log.i("Top", String.valueOf(list2));
-      //  System.out.println("Left"+list1);
-        //System.out.println("Top"+list2);
-    }
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int childLeft = getPaddingLeft();
-        int childTop = getPaddingTop();
-        int lineHeight = 0;
-        int myWidth = right - left;
-
-        for (int i = 0; i < getChildCount(); i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() == View.GONE) {
-                continue;
-            }
-            int childWidth = child.getMeasuredWidth();
-            int childHeight = child.getMeasuredHeight();
-            lineHeight = Math.max(childHeight, lineHeight);
-            if (childWidth + childLeft + getPaddingRight() > myWidth) {
-                childLeft = getPaddingLeft();
-                childTop += mVerticalSpacing + lineHeight;
-                lineHeight = childHeight;
-            }
-            child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
-            childLeft += childWidth + mHorizontalSpacing;
+            wantedHeight += childTop + lineHeight + getPaddingBottom();
+            setMeasuredDimension(myWidth, resolveSize(wantedHeight, heightMeasureSpec));
         }
     }
-}
+
+        @Override
+        protected void onLayout ( boolean changed, int left, int top, int right, int bottom){
+            int childLeft = getPaddingLeft();
+            int childTop = getPaddingTop();
+            int lineHeight = 0;
+            int myWidth = right - left;
+
+            int orient = this.getOrientation();
+            int hori = FlowLayout.HORIZONTAL;
+
+            if (orient == hori) {
+                for (int i = 0; i < getChildCount(); i++) {
+                    child = getChildAt(i);
+                    if (child.getVisibility() == View.GONE) {
+                        continue;
+                    }
+                    int childWidth = child.getMeasuredWidth();
+                    int childHeight = child.getMeasuredHeight();
+                    lineHeight = Math.max(childHeight, lineHeight);
+                    if (childWidth + childLeft + getPaddingRight() > myWidth) {
+                        childLeft = getPaddingLeft();
+                        childTop += mVerticalSpacing + lineHeight;
+                        lineHeight = childHeight;
+                    }
+                    child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
+                    childLeft += childWidth + mHorizontalSpacing;
+                }
+            } else {
+                for (int i = 0; i < getChildCount(); i++) {
+                    child = getChildAt(i);
+                    if (child.getVisibility() == View.GONE) {
+                        continue;
+                    }
+                    int childWidth = child.getMeasuredWidth();
+                    int childHeight = child.getMeasuredHeight();
+                    lineHeight = Math.max(childHeight, lineHeight);
+                  /*  if (childWidth + childLeft + getPaddingRight() > myWidth) {
+                        childLeft = getPaddingLeft();
+                        childTop += mVerticalSpacing + lineHeight;
+                        lineHeight = childHeight;
+                    }*/
+                    child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
+                    childTop += childHeight + mVerticalSpacing;
+                }
+            }
+
+        }
+
+    }
+
+
