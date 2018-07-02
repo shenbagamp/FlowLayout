@@ -126,16 +126,19 @@ public class FlowLayout extends ViewGroup {
                         getChildMeasureSpec(heightMeasureSpec, 0, child.getLayoutParams().height));
                 int childWidth = child.getMeasuredWidth();
                 int childHeight = child.getMeasuredHeight();
+
                 lineWidth = Math.max(childWidth, lineWidth);
-                int temp=childHeight;
-                Log.i("nhtgj", String.valueOf(childHeight + childTop + getPaddingBottom()));
 
+                if ( childHeight +childTop + getPaddingBottom() >myHeight) {
+                    childTop=getPaddingTop();
+                    childLeft+= mHorizontalSpacing+lineWidth;
+                    lineWidth=childWidth;
 
-                
-                childTop += childHeight + mVerticalSpacing;
+                }
+                childLeft += childWidth + mHorizontalSpacing;
             }
-            wantedHeight += childTop + lineHeight + getPaddingBottom();
-            setMeasuredDimension(myWidth, resolveSize(wantedHeight, heightMeasureSpec));
+            wantedWidth+= childLeft + lineWidth + getPaddingRight();
+            setMeasuredDimension(resolveSize(wantedWidth, widthMeasureSpec),myHeight );
         }
     }
 
@@ -145,6 +148,8 @@ public class FlowLayout extends ViewGroup {
             int childTop = getPaddingTop();
             int lineHeight = 0;
             int myWidth = right - left;
+            int myHeight=bottom-top;
+            int lineWidth=0;
 
             int orient = this.getOrientation();
             int hori = FlowLayout.HORIZONTAL;
@@ -174,18 +179,22 @@ public class FlowLayout extends ViewGroup {
                     }
                     int childWidth = child.getMeasuredWidth();
                     int childHeight = child.getMeasuredHeight();
-                    lineHeight = Math.max(childHeight, lineHeight);
-                  /*  if (childWidth + childLeft + getPaddingRight() > myWidth) {
-                        childLeft = getPaddingLeft();
-                        childTop += mVerticalSpacing + lineHeight;
-                        lineHeight = childHeight;
-                    }*/
+
+                    lineWidth = Math.max(childWidth, lineWidth);
+                    if (childHeight + childTop + getPaddingBottom() > myHeight) {
+                        childTop=getPaddingTop();
+                        childLeft+= mHorizontalSpacing+lineWidth;
+                        lineWidth=childWidth;
+                    }
+
                     child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
                     childTop += childHeight + mVerticalSpacing;
                 }
             }
 
         }
+
+
 
     }
 
