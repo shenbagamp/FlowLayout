@@ -161,6 +161,7 @@ public class FlowLayout extends ViewGroup {
             int lineHeight = 0;
             int myWidth = right - left;
             int myHeight = bottom - top;
+            int temp=0;
             int lineWidth = 0;
 
             int orient = this.getOrientation();
@@ -196,31 +197,6 @@ public class FlowLayout extends ViewGroup {
                         idx++;
                     }
 
-                    /*for (int i = 0; i < getChildCount(); i++) {
-                        child = getChildAt(i);
-                        if (child.getVisibility() == View.GONE) {
-                            continue;
-                        }
-                        int childWidth = child.getMeasuredWidth();
-                        int childHeight = child.getMeasuredHeight();
-                        lineHeight = Math.max(childHeight, lineHeight);
-                  *//*  if (childWidth + childLeft + getPaddingRight() > myWidth) {
-                        childLeft = getPaddingLeft();
-                        childTop += mVerticalSpacing + lineHeight;
-                        lineHeight = childHeight;
-                    }*//*
-                        int left1 = myWidth - childWidth;
-                        int right1 = myWidth;
-                        child.layout(left1, childTop, right1, childHeight);
-                        myWidth = left1 - mHorizontalSpacing;
-                        //right1=(right1-childWidth)-mHorizontalSpacing;
-
-                    }*/
-
-
-
-
-
 
                     for (int i = 0; i < childList.length; i++) {
                         child = childList[i];
@@ -245,15 +221,24 @@ public class FlowLayout extends ViewGroup {
                         int childWidth = child.getMeasuredWidth();
                         int childHeight = child.getMeasuredHeight();
                         lineHeight = Math.max(childHeight, lineHeight);
+                        Log.i("cw", String.valueOf(myHeight));
+                        Log.i("cw", String.valueOf(myWidth));
                   /*  if (childWidth + childLeft + getPaddingRight() > myWidth) {
                         childLeft = getPaddingLeft();
                         childTop += mVerticalSpacing + lineHeight;
                         lineHeight = childHeight;
                     }*/
-                        int left1 = myWidth - childWidth;
-                        int right1 = myWidth;
-                        child.layout(left1, myHeight / 2, right1, childHeight+childHeight);
-                        myWidth = left1 - mHorizontalSpacing;
+                   //     int left1 = myWidth - childWidth;
+                       // int right1 = myWidth;
+                        int temp1=childWidth;
+                       for(int j=0;j<i+1;j++) {
+                           int child2 = temp1 + temp;
+                           child.layout(myWidth / 2 - childWidth / 2, myHeight / 2 - childHeight / 2, myWidth / 2 + childWidth / 2, myHeight / 2 + childHeight / 2);
+                           temp = childWidth + mHorizontalSpacing;
+                       }
+
+                       //myWidth = left1 - mHorizontalSpacing;
+
                         //right1=(right1-childWidth)-mHorizontalSpacing;
 
                     }
