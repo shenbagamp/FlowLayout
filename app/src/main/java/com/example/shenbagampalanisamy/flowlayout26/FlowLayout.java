@@ -3,6 +3,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -153,6 +154,7 @@ public class FlowLayout extends ViewGroup {
         }
     }
 
+        @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         protected void onLayout ( boolean changed, int left, int top, int right, int bottom) {
             int childLeft = getPaddingLeft();
@@ -189,27 +191,19 @@ public class FlowLayout extends ViewGroup {
 
                     }
                  else if (Gravity.RIGHT == mGravity) {
-
-                    View[] childList = new View[getChildCount()];
-                    int idx = 0;
-                    for (int i = getChildCount()-1; i >= 0; i--) {
-                        childList[idx] = getChildAt(i);
-                        idx++;
-                    }
-
-
-                    for (int i = 0; i < childList.length; i++) {
-                        child = childList[i];
+                    int child2 = 0;
+                    for (int i = child2; i < getChildCount(); ) {
+                        child = getChildAt(i);
                         if (child.getVisibility() == View.GONE) {
                             continue;
                         }
                         int childWidth = child.getMeasuredWidth();
                         int childHeight = child.getMeasuredHeight();
-                        lineHeight = Math.max(childHeight, lineHeight);
-                        int left1 = myWidth - childWidth;
-                        int right1 = myWidth;
-                        child.layout(left1, childTop, right1, childHeight);
-                        myWidth = left1 - mHorizontalSpacing;
+
+                        int rowwdith = 0;
+
+
+                        child.layout(myWidth-rowwdith,0,myWidth,childHeight);
                     }
                 }
                 else if(Gravity.CENTER==mGravity) {
@@ -218,29 +212,19 @@ public class FlowLayout extends ViewGroup {
                         if (child.getVisibility() == View.GONE) {
                             continue;
                         }
+
                         int childWidth = child.getMeasuredWidth();
                         int childHeight = child.getMeasuredHeight();
                         lineHeight = Math.max(childHeight, lineHeight);
                         Log.i("cw", String.valueOf(myHeight));
                         Log.i("cw", String.valueOf(myWidth));
-                  /*  if (childWidth + childLeft + getPaddingRight() > myWidth) {
-                        childLeft = getPaddingLeft();
-                        childTop += mVerticalSpacing + lineHeight;
-                        lineHeight = childHeight;
-                    }*/
-                   //     int left1 = myWidth - childWidth;
-                       // int right1 = myWidth;
+
                         int temp1=childWidth;
                        for(int j=0;j<i+1;j++) {
                            int child2 = temp1 + temp;
                            child.layout(myWidth / 2 - childWidth / 2, myHeight / 2 - childHeight / 2, myWidth / 2 + childWidth / 2, myHeight / 2 + childHeight / 2);
                            temp = childWidth + mHorizontalSpacing;
                        }
-
-                       //myWidth = left1 - mHorizontalSpacing;
-
-                        //right1=(right1-childWidth)-mHorizontalSpacing;
-
                     }
                 }
 
